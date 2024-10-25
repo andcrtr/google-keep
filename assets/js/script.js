@@ -1,7 +1,4 @@
-
-
 // note class
-
 class Note{
     constructor(id, title, text){
         this.id = id;
@@ -14,7 +11,7 @@ class Note{
 
 class App{
     constructor(){
-        this.notes []; // initialize an empty array to store notes
+        this.notes = [];        // initialize an empty array to store notes
         this.$activeForm = document.querySelector(".active-form");
         this.$inactiveForm = document.querySelector(".inactive-form");
         this.$noteTitle = document.querySelector(".note-title");
@@ -33,35 +30,34 @@ class App{
             //when click event occurs, call the handleFormClick method
             this.handleFormClick(event);
             this.openModel(event);
-        })
+        });
 
         this.$form.addEventListener("submit", (event) => {
             event.preventDefault(); //prefents page/browser from refreshing
             const title = this.$noteTitle.value;
             const text = this.$noteText.value;
-            this.addNote({ title, text})
+            this.addNote({ title, text});
             this.closeActiveForm();
-        })
+        });
     }
 
-    handleFormClick(event){
+    handleFormClick(event) {
         const isActiveFormClickOn = this.$activeForm.contains(event.target);
         const isInactiveFormClickOn = this.$inactiveForm.contains(event.target);
-
+        
         const title = this.$noteTitle.value;
         const text = this.$noteText.value;
-
-        if(isInactiveFormClickOn){
-            //calling function to open the active form
+    
+        if (isInactiveFormClickOn) {
+            // Show the form for adding a note
             this.openActiveForm(); 
-        } else if(isInactiveFormClickOn && !isActiveFormClickOn){
-            //calling the function to add a new note
-            this.addNote({title, text});
-            //calling function to close active form
+        } else if (!isActiveFormClickOn && (title || text)) {
+            // If clicked outside the form, add the note and close the form
+            this.addNote({ title, text });
             this.closeActiveForm();
-
         }
     }
+    
 
     openModel(event){
         if(event.target.closest(".note")){
@@ -69,59 +65,69 @@ class App{
         }
     }
 
+
     openActiveForm(){
-        this.$activeForm.style.display = "block";
-        this.$inactiveForm.style.display = "none";
-        this.$noteText.focus();
+        this.$activeForm.style.display = "block"; // Show form
+        this.$inactiveForm.style.display = "none"; // Hide inactive form
+        this.$noteText.focus(); // Focus on the textarea
     }
 
     closeActiveForm(){
-        this.$activeForm.style.display = "none";
-        this.$inactiveForm.style.display = "block";
+        this.$activeForm.style.display = "none"; // Hide form
+        this.$inactiveForm.style.display = "block"; // Show inactive form again
+        this.$noteTitle.value = ''; // Clear title input
+        this.$noteText.value = ''; // Clear text input
     }
 
     // method to add a new note to notes
-    addNote({ title, text}) {
-        id(text != "") {
-            const newNote = new Note (cuid(), title, text)
-            this.notes = (...this.notes, newNote); //add the note to notes array
-
+    addNote({ title, text }) {
+        if (text !== "") {
+            const newNote = new Note(cuid(), title, text);
+            this.notes = [...this.notes, newNote]; // Adds the note to the array
             this.displayNotes();
-        };
-    };
-
-
+        }
+    }
+    
 
     // method to edit an existing note to notes
-    editNote({ title, text}) {
-        this.notes = this.notes.map(note => {
-            if(note.id === id){
-                note.title = title;
-                note.text = text;
-            }
-            return note;
-        })
-    }
+    // editNote({ title, text}) {
+    //     this.notes = this.notes.map(note => {
+    //         if(note.id === id){
+    //             note.title = title;
+    //             note.text = text;
+    //         }
+    //         return note;
+    //     })
+    // }
+
+    editNote(id, { title, text }) {
+        this.notes = this.notes.map((note) => {
+          if (note.id == id) {
+            note.title = title;
+            note.text = text;
+          }
+          return note;
+        });
+        this.displayNotes();
+      }
 
     // method to delete a note in the notes
-    deleteNote(id){
-        this.notes - this.notes.filter(note => note.id !== id); //remove note from array
-
+    deleteNote(id) {
+        this.notes = this.notes.filter(note => note.id !== id); // Filters out the note by ID
+        this.displayNotes();
     }
+    
 
-    displayNotes(){
-        this.$notes.innerHTML = this.notes.map((notes) => 
+    displayNotes() {
+        this.$notes.innerHTML = this.notes.map((note) => 
         `
-        <div class="note" id"${note.id}">
+        <div class="note" id="${note.id}">
             <div class="note-content">
                 <div class="note-header">
-
                     <p>${note.title}</p>
-
                     <span class="material-symbols-outlined note-pin">keep</span>
                 </div>
-
-                p>${note.text}</p>
+                <p>${note.text}</p>
             </div>
             <div class="note-footer-icons">
                 <span class="material-symbols-outlined footer-icon">add_alert</span>
@@ -132,8 +138,11 @@ class App{
                 <span class="material-symbols-outlined footer-icon">more_vert</span>
             </div>
         </div>
-        `).join(""); // display each notes details
+        `).join(""); // Joins and displays each note's details
     }
+    
 }
 
+// Initialize the app
 const app = new App();
+
